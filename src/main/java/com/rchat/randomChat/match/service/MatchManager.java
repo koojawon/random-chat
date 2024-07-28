@@ -1,6 +1,5 @@
 package com.rchat.randomChat.match.service;
 
-import com.google.gson.JsonObject;
 import com.rchat.randomChat.match.repository.ConnectionInfoRepository;
 import com.rchat.randomChat.match.repository.WaitQueueRepository;
 import com.rchat.randomChat.websocket.service.WebsocketManager;
@@ -50,7 +49,7 @@ public class MatchManager {
         queueRepository.remove(session.getId());
     }
 
-    public String getOpponentId(WebSocketSession session, JsonObject jsonObject) {
+    public String getOpponentId(WebSocketSession session) {
         return connectionInfoRepository.getById(session.getId());
     }
 

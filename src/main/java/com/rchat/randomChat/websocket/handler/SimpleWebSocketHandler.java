@@ -36,13 +36,13 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
             case "sdpOffer":
             case "sdpAnswer":
             case "onIceCandidate": {
-                String opponentId = matchManager.getOpponentId(session, jsonObject);
+                String opponentId = matchManager.getOpponentId(session);
                 websocketManager.sendMessage(opponentId, message);
             }
             break;
             case "stop":
                 if (matchManager.isAfterMatched(session)) {
-                    matchManager.getOpponentId(session, jsonObject);
+                    matchManager.getOpponentId(session);
                     matchManager.deCouple(session);
                 }
                 matchManager.withdraw(session);
