@@ -133,12 +133,12 @@ function createRTC(callback) {
 
 function dataChannelOpen() {
   inputBox.disabled = false;
-  sendButton.addEventListener("onclick", sendChat);
+  sendButton.addEventListener("click", sendChat);
 }
 
 function dataChannelClose() {
   inputBox.disabled = true;
-  sendButton.removeEventListener("onclick", sendChat);
+  sendButton.removeEventListener("click", sendChat);
 }
 
 function dataChannelMessage(e) {
@@ -487,7 +487,7 @@ function recalcChatBoxHeight() {
 }
 
 function enterKey() {
-  if (window.event.keyCode == 13) {
+  if (event.key == 'Enter') {
     sendChat();
   }
 }
