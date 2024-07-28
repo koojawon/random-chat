@@ -2,7 +2,8 @@ package com.rchat.randomChat.websocket.handler;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.rchat.randomChat.match.service.MatchService;
+import com.rchat.randomChat.match.service.MatchManager;
+import com.rchat.randomChat.websocket.service.WebsocketManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,11 +18,12 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class SimpleWebSocketHandler extends TextWebSocketHandler {
 
     private final Gson gson = new Gson();
-    private final MatchService matchService;
+    private final MatchManager matchManager;
+    private final WebsocketManager websocketManager;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        matchService.join(session);
+        websocketManager.join(session);
     }
 
     @Override
@@ -29,19 +31,21 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
         JsonObject jsonObject = gson.fromJson(message.getPayload(), JsonObject.class);
         switch (jsonObject.get("id").getAsString()) {
             case "start":
-                matchService.joinWaitList(session);
+                matchManager.joinQueue(session);
                 break;
             case "sdpOffer":
             case "sdpAnswer":
-            case "onIceCandidate":
-                matchService.transferMessageToOpponent(session, jsonObject);
-                break;
+            case "onIceCandidate": {
+                String opponentId = matchManager.getOpponentId(session, jsonObject);
+                websocketManager.sendMessage(opponentId, message);
+            }
+            break;
             case "stop":
-                if (matchService.isAfterMatched(session)) {
-                    matchService.transferMessageToOpponent(session, jsonObject);
-                    matchService.deCouple(session);
+                if (matchManager.isAfterMatched(session)) {
+                    matchManager.getOpponentId(session, jsonObject);
+                    matchManager.deCouple(session);
                 }
-                matchService.withdraw(session);
+                matchManager.withdraw(session);
                 break;
             default:
                 log.error("Message with Unknown ID received : {}", jsonObject);
@@ -51,6 +55,6 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        matchService.leave(session);
+        websocketManager.leave(session);
     }
 }
