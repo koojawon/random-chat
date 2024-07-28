@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.rchat.randomChat.match.service.MatchManager;
 import com.rchat.randomChat.websocket.service.WebsocketManager;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -35,17 +36,11 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
                 break;
             case "sdpOffer":
             case "sdpAnswer":
-            case "onIceCandidate": {
-                String opponentId = matchManager.getOpponentId(session);
-                websocketManager.sendMessage(opponentId, message);
-            }
-            break;
+            case "onIceCandidate":
+                transferMessage(session, message);
+                break;
             case "stop":
-                if (matchManager.isAfterMatched(session)) {
-                    matchManager.getOpponentId(session);
-                    matchManager.deCouple(session);
-                }
-                matchManager.withdraw(session);
+                handleStop(session);
                 break;
             default:
                 log.error("Message with Unknown ID received : {}", jsonObject);
@@ -56,5 +51,18 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         websocketManager.leave(session);
+    }
+
+    private void transferMessage(WebSocketSession session, TextMessage message) throws IOException {
+        String opponentId = matchManager.getOpponentId(session);
+        websocketManager.sendMessage(opponentId, message);
+    }
+
+    private void handleStop(WebSocketSession session) {
+        if (matchManager.isAfterMatched(session)) {
+            matchManager.getOpponentId(session);
+            matchManager.deCouple(session);
+        }
+        matchManager.withdraw(session);
     }
 }
