@@ -3,11 +3,11 @@ package com.rchat.randomChat.websocket.service;
 import com.rchat.randomChat.websocket.repository.WebSocketSessionRepository;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class WebsocketManager {
     private final WebSocketSessionRepository sessionRepository;
