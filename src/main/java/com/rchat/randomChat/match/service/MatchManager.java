@@ -3,26 +3,24 @@ package com.rchat.randomChat.match.service;
 import com.google.gson.JsonObject;
 import com.rchat.randomChat.match.repository.ConnectionInfoRepository;
 import com.rchat.randomChat.match.repository.WaitQueueRepository;
-import com.rchat.randomChat.websocket.repository.WebSocketSessionRepository;
-import com.rchat.randomChat.websocket.service.SendService;
+import com.rchat.randomChat.websocket.service.WebsocketManager;
 import com.rchat.randomChat.websocket.statics.SdpGenerationOrderMessage;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class MatchService {
-
-    private final WebSocketSessionRepository sessionRepository;
+public class MatchManager {
 
     private final ConnectionInfoRepository connectionInfoRepository;
     private final WaitQueueRepository queueRepository;
 
-    private final SendService sendService;
+    private final WebsocketManager websocketManager;
 
-    public void joinWaitList(WebSocketSession session) throws IOException {
+    public void joinQueue(WebSocketSession session) throws IOException {
         String opponentId;
         while (true) {
             if (queueRepository.isEmpty()) {
@@ -30,7 +28,7 @@ public class MatchService {
                 return;
             }
             opponentId = queueRepository.dequeue();
-            if (!checkAliveById(opponentId)) {
+            if (!websocketManager.checkAliveById(opponentId)) {
                 queueRepository.remove(opponentId);
                 continue;
             }
@@ -41,7 +39,7 @@ public class MatchService {
 
     private void matchSuccess(WebSocketSession session, String opponentId) throws IOException {
         connectionInfoRepository.put(session.getId(), opponentId);
-        sendService.sendMessage(session, new SdpGenerationOrderMessage());
+        websocketManager.sendMessage(session.getId(), new TextMessage(new SdpGenerationOrderMessage().toString()));
     }
 
     public void deCouple(WebSocketSession session) {
@@ -52,10 +50,8 @@ public class MatchService {
         queueRepository.remove(session.getId());
     }
 
-    public void transferMessageToOpponent(WebSocketSession session, JsonObject jsonObject) throws IOException {
-        String opponentId = connectionInfoRepository.getById(session.getId());
-        WebSocketSession oppoSession = sessionRepository.get(opponentId);
-        sendService.sendMessage(oppoSession, jsonObject);
+    public String getOpponentId(WebSocketSession session, JsonObject jsonObject) {
+        return connectionInfoRepository.getById(session.getId());
     }
 
     public boolean isAfterMatched(WebSocketSession session) {
@@ -66,15 +62,5 @@ public class MatchService {
         return true;
     }
 
-    public void join(WebSocketSession session) {
-        sessionRepository.put(session);
-    }
 
-    public void leave(WebSocketSession session) {
-        sessionRepository.remove(session);
-    }
-
-    private boolean checkAliveById(String sessionId) {
-        return sessionRepository.get(sessionId).isOpen();
-    }
 }
