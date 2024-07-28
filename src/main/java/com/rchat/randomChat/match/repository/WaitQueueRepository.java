@@ -10,4 +10,6 @@ public interface WaitQueueRepository {
     public void enqueue(String id);
 
     public String dequeue();
+
+    public void remove(String id);
 }
