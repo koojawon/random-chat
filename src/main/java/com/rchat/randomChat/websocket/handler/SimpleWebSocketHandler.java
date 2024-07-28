@@ -3,7 +3,6 @@ package com.rchat.randomChat.websocket.handler;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.rchat.randomChat.match.service.MatchService;
-import com.rchat.randomChat.websocket.repository.WebSocketSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,12 +17,11 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class SimpleWebSocketHandler extends TextWebSocketHandler {
 
     private final Gson gson = new Gson();
-    private final WebSocketSessionRepository sessionRepository;
     private final MatchService matchService;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        sessionRepository.put(session);
+        matchService.join(session);
     }
 
     @Override
@@ -35,27 +33,24 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
                 break;
             case "sdpOffer":
             case "sdpAnswer":
-                matchService.sendSdpToOpponent(session, jsonObject);
-                break;
             case "onIceCandidate":
-                matchService.onIceCandidate(session, jsonObject);
+                matchService.transferMessageToOpponent(session, jsonObject);
                 break;
             case "stop":
                 if (matchService.isAfterMatched(session)) {
-                    matchService.sendStopToOpponent(session, jsonObject);
+                    matchService.transferMessageToOpponent(session, jsonObject);
                     matchService.deCouple(session);
                 }
+                matchService.withdraw(session);
+                break;
+            default:
+                log.error("Message with Unknown ID received : {}", jsonObject);
                 break;
         }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        sessionRepository.remove(session);
-    }
-
-    @Override
-    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-        super.handleTransportError(session, exception);
+        matchService.leave(session);
     }
 }
