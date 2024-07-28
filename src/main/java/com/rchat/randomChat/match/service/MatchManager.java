@@ -60,6 +60,4 @@ public class MatchManager {
         }
         return true;
     }
-
-
 }
