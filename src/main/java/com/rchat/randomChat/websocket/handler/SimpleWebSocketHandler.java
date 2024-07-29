@@ -37,10 +37,10 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
             case "sdpOffer":
             case "sdpAnswer":
             case "onIceCandidate":
-                transferMessage(session, message);
+                transferMessage(session, jsonObject);
                 break;
             case "stop":
-                handleStop(session);
+                handleStop(session, jsonObject);
                 break;
             default:
                 log.error("Message with Unknown ID received : {}", jsonObject);
@@ -53,14 +53,14 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
         websocketManager.leave(session);
     }
 
-    private void transferMessage(WebSocketSession session, TextMessage message) throws IOException {
+    private void transferMessage(WebSocketSession session, JsonObject message) throws IOException {
         String opponentId = matchManager.getOpponentId(session);
         websocketManager.sendMessage(opponentId, message);
     }
 
-    private void handleStop(WebSocketSession session) {
+    private void handleStop(WebSocketSession session, JsonObject jsonObject) throws IOException {
         if (matchManager.isAfterMatched(session)) {
-            matchManager.getOpponentId(session);
+            transferMessage(session, jsonObject);
             matchManager.deCouple(session);
         }
         matchManager.withdraw(session);
