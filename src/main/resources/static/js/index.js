@@ -100,11 +100,15 @@ function createRTC(callback) {
       onicecandidate: onIceCandidate,
       dataChannels: true,
       dataChannelConfig: {
-        id: "ranChatData",
+        label: "ranChatData",
         onopen: dataChannelOpen,
         onmessage: dataChannelMessage,
         onclose: dataChannelClose,
         onerror: dataChannelError,
+        options:{
+            negotiated: true,
+            id: 0,
+        }
       },
       configuration: {
         iceServers: [
@@ -172,8 +176,8 @@ function WebRtcPeer(options, callback) {
   // Init PeerConnection
   if (!pc) {
     pc = new RTCPeerConnection(configuration);
-    if (owner && useDataChannels && !this.dataChannel) {
-      var dcId = dataChannelConfig.id || dcId;
+    if (useDataChannels && !this.dataChannel) {
+      var dcId = dataChannelConfig.label || dcId;
       var dcOptions = dataChannelConfig.options;
       this.dataChannel = pc.createDataChannel(dcId, dcOptions);
       this.dataChannel.onopen = dataChannelConfig.onopen;
@@ -198,19 +202,6 @@ function WebRtcPeer(options, callback) {
       if (!candidate) this.candidategatheringdone = true;
     }
   };
-
-  pc.ondatachannel = (e) => {
-    if (!owner) {
-      this.dataChannel = e.channel;
-      this.dataChannel.onopen = dataChannelConfig.onopen;
-      this.dataChannel.onclose = dataChannelConfig.onclose;
-      this.dataChannel.onmessage = dataChannelConfig.onmessage;
-      this.dataChannel.onbufferedamountlow =
-        dataChannelConfig.onbufferedamountlow;
-      this.dataChannel.onerror = dataChannelConfig.onerror;
-    }
-  };
-
   pc.onaddstream = options.onaddstream;
   pc.onnegotiationneeded = options.onnegotiationneeded;
 
