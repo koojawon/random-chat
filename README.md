@@ -6,4 +6,6 @@
 
 WebSocket을 통한 Signaling을 지원하는 Spring Boot 프로젝트입니다.
 
-WebRTC는 Mesh방식으로 구현되어있어 서버에서는 통신에 전혀 관여하지 않으며,  TURN 서버는 아직 지원하지 않습니다.
+WebRTC는 Mesh방식으로 구현되어있어 서버에서는 통신에 전혀 관여하지 않으며, TURN 서버는 아직 지원하지 않습니다.
+
+구현 설명은 여기로...https://koojawon.github.io/categories/webrtc/
