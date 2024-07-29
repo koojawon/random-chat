@@ -7,13 +7,11 @@ import com.rchat.randomChat.websocket.statics.SdpGenerationOrderMessage;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 @Component
 @RequiredArgsConstructor
 public class MatchManager {
-
     private final ConnectionInfoRepository connectionInfoRepository;
     private final WaitQueueRepository queueRepository;
 
@@ -38,7 +36,8 @@ public class MatchManager {
 
     private void matchSuccess(WebSocketSession session, String opponentId) throws IOException {
         connectionInfoRepository.put(session.getId(), opponentId);
-        websocketManager.sendMessage(session.getId(), new TextMessage(new SdpGenerationOrderMessage().toString()));
+        connectionInfoRepository.put(opponentId, session.getId());
+        websocketManager.sendMessage(session.getId(), new SdpGenerationOrderMessage());
     }
 
     public void deCouple(WebSocketSession session) {
