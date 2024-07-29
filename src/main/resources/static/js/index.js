@@ -298,7 +298,6 @@ function WebRtcPeer(options, callback) {
           id: "sdpAnswer",
           sdpAnswer: answer,
         };
-        console.log(answer.sdp);
         sendMessage(message);
         return pc.setLocalDescription(answer);
       })
@@ -309,13 +308,6 @@ function WebRtcPeer(options, callback) {
       .catch(callback);
   };
 
-  /**
-   * This function creates the RTCPeerConnection object taking into account the
-   * properties received in the constructor. It starts the SDP negotiation
-   * process: generates the SDP offer and invokes the onsdpoffer callback. This
-   * callback is expected to send the SDP offer, in order to obtain an SDP
-   * answer from another peer.
-   */
   function start() {
     if (pc.signalingState === "closed") {
       callback(
@@ -340,7 +332,6 @@ function WebRtcPeer(options, callback) {
   navigator.mediaDevices
     .getUserMedia(MEDIA_CONSTRAINTS)
     .then((stream) => {
-      console.log(stream);
       videoStream = stream;
       start();
     })
@@ -410,7 +401,6 @@ function onOfferPresenter(error) {
     id: "sdpOffer",
     sdpOffer: offerSdp,
   };
-  console.log(offerSdp.sdp);
   sendMessage(message);
 }
 
