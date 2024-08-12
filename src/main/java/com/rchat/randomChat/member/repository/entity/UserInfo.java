@@ -1,4 +1,4 @@
-package com.rchat.randomChat.global.repository.entity;
+package com.rchat.randomChat.member.repository.entity;
 
 import com.rchat.randomChat.security.Roles;
 import jakarta.persistence.Column;
