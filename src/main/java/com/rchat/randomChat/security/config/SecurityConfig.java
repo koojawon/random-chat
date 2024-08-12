@@ -5,6 +5,7 @@ import com.rchat.randomChat.security.filter.JsonUsernamePasswordAuthenticationFi
 import com.rchat.randomChat.security.filter.JwtAuthenticationProcessingFilter;
 import com.rchat.randomChat.security.filter.RefreshRequestProcessingFilter;
 import com.rchat.randomChat.security.handler.CustomAccessDeniedHandler;
+import com.rchat.randomChat.security.handler.CustomAuthenticationEntryPoint;
 import com.rchat.randomChat.security.handler.CustomLogoutSuccessHandler;
 import com.rchat.randomChat.security.handler.LoginFailureHandler;
 import com.rchat.randomChat.security.handler.LoginSuccessHandler;
@@ -37,10 +38,12 @@ public class SecurityConfig {
 
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
     private final CustomUserDetailsService userDetailsService;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter;
     private final RefreshRequestProcessingFilter refreshRequestProcessingFilter;
     private final ObjectMapper objectMapper;
     private final LoginFailureHandler loginFailureHandler;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
     private final LoginSuccessHandler loginSuccessHandler;
 
     @Bean
@@ -48,10 +51,11 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers("/", "/api/signup").permitAll()
+                                .requestMatchers("/index.html", "/", "/api/signup").permitAll()
                                 .requestMatchers("/admin").hasRole("admin")
                                 .anyRequest().denyAll())
                 .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(
                         httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -64,7 +68,9 @@ public class SecurityConfig {
                         JsonUsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(refreshRequestProcessingFilter, JwtAuthenticationProcessingFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
-                        httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(new CustomAccessDeniedHandler()))
+                        httpSecurityExceptionHandlingConfigurer
+                                .accessDeniedHandler(accessDeniedHandler)
+                                .authenticationEntryPoint(authenticationEntryPoint))
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer
                         .configurationSource(corsConfigurationSource()))
                 .build();
