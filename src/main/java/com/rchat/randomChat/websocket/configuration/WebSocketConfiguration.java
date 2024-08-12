@@ -17,6 +17,6 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketHandler, "/randomChat")
-                .setAllowedOriginPatterns("*");
+                .setAllowedOriginPatterns("localhost");
     }
 }
