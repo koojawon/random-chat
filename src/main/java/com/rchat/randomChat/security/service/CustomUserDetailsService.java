@@ -1,7 +1,7 @@
 package com.rchat.randomChat.security.service;
 
-import com.rchat.randomChat.global.repository.UserRepository;
-import com.rchat.randomChat.global.repository.entity.UserInfo;
+import com.rchat.randomChat.member.repository.UserRepository;
+import com.rchat.randomChat.member.repository.entity.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
