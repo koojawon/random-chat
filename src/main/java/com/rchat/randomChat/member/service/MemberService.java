@@ -1,9 +1,9 @@
 package com.rchat.randomChat.member.service;
 
-import com.rchat.randomChat.global.repository.UserRepository;
-import com.rchat.randomChat.global.repository.entity.UserInfo;
 import com.rchat.randomChat.member.dto.CheckEmailDto;
 import com.rchat.randomChat.member.dto.SignUpDto;
+import com.rchat.randomChat.member.repository.UserRepository;
+import com.rchat.randomChat.member.repository.entity.UserInfo;
 import com.rchat.randomChat.security.Roles;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

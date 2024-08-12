@@ -1,8 +1,7 @@
 package com.rchat.randomChat.security.service;
 
 
-import com.rchat.randomChat.global.repository.UserRepository;
-import com.rchat.randomChat.global.repository.entity.UserInfo;
+import com.rchat.randomChat.member.repository.UserRepository;
 import com.rchat.randomChat.redis.service.RedisService;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -119,7 +118,6 @@ public class JwtService {
 
     @Transactional
     public void updateRefreshTokenOfRepository(String email, String refreshToken) {
-        UserInfo user = userRepository.findByEmail(email).orElseThrow();
         redisService.setValue(REFRESH_PREFIX + email, refreshToken, Duration.ofMillis(refreshTokenExpirationPeriod));
     }
 

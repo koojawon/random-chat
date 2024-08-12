@@ -1,6 +1,6 @@
 package com.rchat.randomChat.member.dto;
 
-import com.rchat.randomChat.global.repository.entity.UserInfo;
+import com.rchat.randomChat.member.repository.entity.UserInfo;
 import lombok.Data;
 
 @Data

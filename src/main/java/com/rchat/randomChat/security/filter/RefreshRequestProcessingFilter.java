@@ -1,6 +1,6 @@
 package com.rchat.randomChat.security.filter;
 
-import com.rchat.randomChat.global.repository.UserRepository;
+import com.rchat.randomChat.member.repository.UserRepository;
 import com.rchat.randomChat.redis.service.RedisService;
 import com.rchat.randomChat.security.service.JwtService;
 import jakarta.servlet.FilterChain;
