@@ -105,10 +105,10 @@ function createRTC(callback) {
         onmessage: dataChannelMessage,
         onclose: dataChannelClose,
         onerror: dataChannelError,
-        options:{
-            negotiated: true,
-            id: 0,
-        }
+        options: {
+          negotiated: true,
+          id: 0,
+        },
       },
       configuration: {
         iceServers: [
@@ -468,7 +468,7 @@ function recalcChatBoxHeight() {
 }
 
 function enterKey() {
-  if (event.key == 'Enter') {
+  if (event.key == "Enter") {
     sendChat();
   }
 }
